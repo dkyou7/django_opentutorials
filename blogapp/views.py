@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CreateBlog
-from .models import Blog
+from .models import Blog, Comment
 
 # Create your views here.
 def index(request):
@@ -27,5 +27,11 @@ def createBlog(request):
 
 def detail(request,blog_id):
     blog_detail = get_object_or_404(Blog, pk=blog_id)
+    comments = Comment.objects.filter(blog_id=blog_id)
 
-    return render(request, 'detail.html', {'blog_detail': blog_detail})
+    context = {
+        'blog_detail': blog_detail,
+        'comments': comments
+    }
+
+    return render(request, 'detail.html', context)
