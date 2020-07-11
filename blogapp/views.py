@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CreateBlog
 from .models import Blog, Comment
 from .forms import BlogCommentForm
+import requests
 
 # Create your views here.
 def index(request):
@@ -52,6 +53,7 @@ def detail(request, blog_id):
             request.session['redirect_uri'] = redirect_uri
 
 
+
             return redirect(login_request_uri)
         else:
             return redirect('blogMain')
@@ -82,5 +84,25 @@ def oauth(request):
 
     print(access_token_request_uri)
 
+    access_token_request_uri_data = requests.get(access_token_request_uri)
+    json_data = access_token_request_uri_data.json()
+    access_token = json_data['access_token']
+    print(access_token)
+
+
+    user_profile_info_uri = "https://kapi.kakao.com/v1/api/talk/profile?access_token="
+    user_profile_info_uri += str(access_token)
+
+    user_profile_info_uri_data = requests.get(user_profile_info_uri)
+    user_json_data = user_profile_info_uri_data.json()
+    nickName = user_json_data['nickName']
+    profileImageURL = user_json_data['profileImageURL']
+    thumbnailURL = user_json_data['thumbnailURL']
+
+    print("nickName = " + str(nickName))
+    print("profileImageURL = " + str(profileImageURL))
+    print("thumbnailURL = " + str(thumbnailURL))
+
 
     return redirect('blogMain')
+
